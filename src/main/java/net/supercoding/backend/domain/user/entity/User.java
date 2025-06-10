@@ -31,6 +31,9 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
     @Builder.Default
     private Boolean isAdmin = false;
 
