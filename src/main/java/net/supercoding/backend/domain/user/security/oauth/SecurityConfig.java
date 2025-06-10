@@ -1,25 +1,59 @@
 package net.supercoding.backend.domain.user.security.oauth;
 
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import net.supercoding.backend.domain.user.security.CustomUserDetailsService;
+import net.supercoding.backend.domain.user.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomUserDetailsService userDetailsService;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (개발 편의용)
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/users/signup").permitAll() // 회원가입은 누구나 접근 가능
-                        .anyRequest().authenticated() // 나머지는 인증 필요
-                );
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(
+                                "/users/signup",
+                                "/users/login",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll() // 회원가입, 로그인, 정적리소스는 누구나 접근 가능
+//                        .anyRequest().authenticated() // 나머지는 인증 필요
+                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능
+                )
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/users/login")
+//                        .failureHandler((request, response, exception) -> {
+//                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                            response.getWriter().write("Login Failed: " + exception.getMessage());
+//                        }) // 에러 핸들러
+//                        .defaultSuccessUrl("/item")
+//                        .permitAll()
+//                )
+//                .logout(logout -> logout
+//                        .logoutUrl("/users/logout")
+//                        .logoutSuccessUrl("/users/login")
+//                        .permitAll()
+//                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
@@ -28,4 +62,12 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+
 }
+
