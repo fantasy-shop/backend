@@ -19,21 +19,13 @@ public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long itemPk;
-
     private String itemName;
-
     private String itemEffect;
-
     private Long itemPrice;
-
     private String itemDescription;
-
     private Long itemInventory;
-
     private String itemImageUrl;
-
     private String itemCategory;
-
     private LocalDateTime itemCreatedAt;
 
     // Entity 생성시 자동으로 itemCreatedAt 값을 현재 시간으로 넣어주는 메서드
