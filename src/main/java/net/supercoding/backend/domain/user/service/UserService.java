@@ -1,0 +1,78 @@
+package net.supercoding.backend.domain.user.service;
+
+import lombok.RequiredArgsConstructor;
+import net.supercoding.backend.domain.user.dto.*;
+import net.supercoding.backend.domain.user.entity.User;
+import net.supercoding.backend.domain.user.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ImageUploader imageUploader;
+
+    @Transactional
+    public void registerUser(SignupRequestDto dto) {
+        // 이메일 중복 체크
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+
+        User user = User.builder()
+                .email(dto.getEmail())
+                .password(encodedPassword)
+                .userName(dto.getUserName())
+                .phoneNumber(dto.getPhoneNumber())
+                .address(dto.getAddress())
+                .build();
+
+        userRepository.save(user);
+    }
+
+    // 로그인 검증 메서드
+    public User authenticate(LoginRequestDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("유저 없음"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("비밀번호 틀림");
+            // 실무에선 해킹 위험때문에 "이메일 또는 비밀번호가 일치하지 않습니다" 응답
+        }
+
+        return user;
+    }
+
+    // 사용자를 json 형식으로 변환하기 위함
+    public UserProfileResponseDto getMyProfile(User user) {
+        return UserProfileResponseDto.from(user);
+    }
+
+    // 유저 정보 업데이트
+    @Transactional
+    public User updateUserProfile(Long userPk, UserProfileUpdateRequestDto updateDto) {
+        User user = userRepository.findById(userPk)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        if (updateDto.getUserName() != null) user.setUserName(updateDto.getUserName());
+        if (updateDto.getPhoneNumber() != null) user.setPhoneNumber(updateDto.getPhoneNumber());
+        if (updateDto.getAddress() != null) user.setAddress(updateDto.getAddress());
+        if (updateDto.getProfileImage() != null && !updateDto.getProfileImage().isEmpty()) {
+            // 이미지 저장 처리 (예: 로컬 디스크 or S3)
+            String imageUrl = imageUploader.upload(updateDto.getProfileImage());
+            user.setProfileImageUrl(imageUrl);
+        }
+
+        // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
+        return user;
+    }
+
+}
