@@ -38,3 +38,6 @@ out/
 
 # macOS specific files
 .DS_Store
+
+# 업로드된 이미지 무시
+/src/main/resources/static/*
