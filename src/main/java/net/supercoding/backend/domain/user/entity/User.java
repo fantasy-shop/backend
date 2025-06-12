@@ -45,4 +45,7 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private UserStatus userStatus = UserStatus.ACTIVE;
+
+    @Column
+    private String profileImageUrl;
 }
