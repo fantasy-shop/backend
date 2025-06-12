@@ -11,6 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateRequest;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateResponse;
+import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemListResponse;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
 import net.supercoding.backend.domain.item.repository.ItemRepository;
@@ -69,6 +70,10 @@ public class ItemService {
             String sortCategory
     ) {
 
+        System.out.println("itemCategory: " + itemCategory);
+        System.out.println("sortCategory: " + sortCategory);
+
+
         List<ItemEntity> itemEntitieList;
 
         // 프론트엔드로부터 전달받은 itemCategory로 필터
@@ -107,6 +112,14 @@ public class ItemService {
 
         itemRepository.delete(itemEntity);
         return "아이템 [" + itemPk + "] 삭제 완료되었습니다.";
+    }
+
+    @Transactional
+    public ItemDetailResponse itemDetail(Long itemPk) {
+        ItemEntity itemEntity = itemRepository.findById(itemPk)
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
+
+        return ItemDetailResponse.fromEntity(itemEntity);
     }
 
 /**

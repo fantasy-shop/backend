@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateRequest;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateResponse;
+import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemListResponse;
 import net.supercoding.backend.domain.item.service.ItemService;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +45,11 @@ public class ItemController {
     @DeleteMapping("/{itemPk}")
     public String itemDelete(@PathVariable("itemPk") Long itemPk) {
         return itemService.itemDelete(itemPk);
+    }
+
+    @GetMapping("/{itemPk}")
+    public ItemDetailResponse itemDetail(@PathVariable("itemPk") Long itemPk) {
+        return itemService.itemDetail(itemPk);
     }
 
 

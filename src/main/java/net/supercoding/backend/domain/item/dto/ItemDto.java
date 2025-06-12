@@ -61,6 +61,33 @@ public class ItemDto {
 
         private Long itemPk;
         private String itemName;
+        private Long itemPrice;
+        private String itemCategory;
+        private String itemImageUrl;
+        private LocalDateTime createdAt;
+
+        public static ItemListResponse fromEntity(ItemEntity itemEntity) {
+
+            return ItemListResponse.builder()
+                    .itemPk(itemEntity.getItemPk())
+                    .itemName(itemEntity.getItemName())
+                    .itemPrice(itemEntity.getItemPrice())
+                    .itemCategory(itemEntity.getItemCategory())
+                    .itemImageUrl(itemEntity.getItemImageUrl())
+                    .createdAt(itemEntity.getItemCreatedAt())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ItemDetailResponse {
+
+        private Long itemPk;
+        private String itemName;
         private String itemEffect;
         private Long itemPrice;
         private String itemDescription;
@@ -69,9 +96,9 @@ public class ItemDto {
         private String itemImageUrl;
         private LocalDateTime createdAt;
 
-        public static ItemListResponse fromEntity(ItemEntity itemEntity) {
+        public static ItemDetailResponse fromEntity(ItemEntity itemEntity) {
 
-            return ItemListResponse.builder()
+            return ItemDetailResponse.builder()
                     .itemPk(itemEntity.getItemPk())
                     .itemName(itemEntity.getItemName())
                     .itemEffect(itemEntity.getItemEffect())
