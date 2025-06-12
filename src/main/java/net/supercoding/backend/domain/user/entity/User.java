@@ -27,10 +27,10 @@ public class User {
     @Column(nullable = false)
     private String userName;
 
-    @Column(nullable = false)
+    @Column
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column
     private String address;
 
     @Column(nullable = false)
@@ -45,4 +45,8 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private UserStatus userStatus = UserStatus.ACTIVE;
+
+    @Column
+    @Builder.Default
+    private String profileImageUrl = "https://yonghun16.duckdns.org/fantasyshop/assets/noavatar-BWii5hIO.png";
 }

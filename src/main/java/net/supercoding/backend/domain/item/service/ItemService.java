@@ -1,19 +1,24 @@
 package net.supercoding.backend.domain.item.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateRequest;
-import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateResponse;
+import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateRequest;
+import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateResponse;
+import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemListResponse;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
 import net.supercoding.backend.domain.item.repository.ItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -22,28 +27,54 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    /**
+     *  아이템 등록
+     */
     @Transactional
-    public ItemCreateResponse itemCreate(ItemCreateRequest itemCreateRequest) {
+    public ItemCreateUpdateResponse itemCreate(
+            ItemCreateUpdateRequest itemCreateUpdateRequest,
+            MultipartFile image
+    ) throws IOException {
 
-        ItemEntity newItemEntity = ItemCreateRequest.toEntity(itemCreateRequest);
+        ItemEntity newItemEntity = ItemCreateUpdateRequest.toEntity(itemCreateUpdateRequest);
+
+        // 이미지 저장 코드
+        if (image != null && !image.isEmpty()) {
+            String today = LocalDate.now().toString();
+
+            // src/main/resources/static 경로를 절대 경로로 지정
+            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
+            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+
+            File uploadDir = new File(staticPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            File saveFile = new File(uploadDir, savedFileName);
+            image.transferTo(saveFile);
+
+            // 프론트에서 접근 가능한 URL 경로
+            String imageUrl = "/" + today + "/" + savedFileName;
+            newItemEntity.setItemImageUrl(imageUrl);
+        }
 
         ItemEntity savedItemEntity = itemRepository.save(newItemEntity);
 
-        return ItemCreateResponse.fromEntity(savedItemEntity);
-
-//        위 코드를 한줄로하면
-//        return ItemCreateResponse.fromEntity(
-//                itemRepository.save(
-//                        ItemCreateRequest.toEntity(itemCreateRequest)
-//                )
-//        );
+        return ItemCreateUpdateResponse.fromEntity(savedItemEntity);
     }
 
+    /**
+     *  아이템 목록
+     */
     @Transactional(readOnly = true)
     public List<ItemListResponse> itemList(
             String itemCategory,
             String sortCategory
     ) {
+
+        System.out.println("itemCategory: " + itemCategory);
+        System.out.println("sortCategory: " + sortCategory);
+
 
         List<ItemEntity> itemEntitieList;
 
@@ -76,13 +107,87 @@ public class ItemService {
         return itemListResponseList;
     }
 
+    /**
+     *  아이템 삭제
+     */
     @Transactional
-    public String itemDelete(Long itemPk) {
+    public String itemDelete(
+            Long itemPk
+    ) {
         ItemEntity itemEntity = itemRepository.findById(itemPk)
                 .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
 
         itemRepository.delete(itemEntity);
         return "아이템 [" + itemPk + "] 삭제 완료되었습니다.";
+    }
+
+    /**
+     *  아이템 상세조회
+     */
+    @Transactional
+    public ItemDetailResponse itemDetail(
+            Long itemPk
+    ) {
+        ItemEntity itemEntity = itemRepository.findById(itemPk)
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
+
+        return ItemDetailResponse.fromEntity(itemEntity);
+    }
+
+    /**
+     *  아이템 수정
+     */
+    @Transactional
+    public ItemCreateUpdateResponse itemUpdate(
+            Long itemPk,
+            ItemCreateUpdateRequest itemCreateUpdateRequest,
+            MultipartFile image
+    ) throws IOException {
+
+        ItemEntity itemEntity = itemRepository.findById(itemPk)
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
+
+        itemEntity.setItemName(itemCreateUpdateRequest.getItemName());
+        itemEntity.setItemEffect(itemCreateUpdateRequest.getItemEffect());
+        itemEntity.setItemPrice(itemCreateUpdateRequest.getItemPrice());
+        itemEntity.setItemDescription(itemCreateUpdateRequest.getItemDescription());
+        itemEntity.setItemInventory(itemCreateUpdateRequest.getItemInventory());
+        itemEntity.setItemCategory(itemCreateUpdateRequest.getItemCategory());
+
+        // 이미지 수정 코드
+        if (image != null && !image.isEmpty()) {
+            String today = LocalDate.now().toString();
+
+            // 1. 기존 이미지 삭제
+            String existingImageUrl = itemEntity.getItemImageUrl(); // 예: "/2025-06-12/abc_image.png"
+            if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
+                String projectRoot = System.getProperty("user.dir");
+                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+
+                File existingImageFile = new File(existingImagePath);
+                if (existingImageFile.exists()) {
+                    existingImageFile.delete(); // 삭제
+                }
+            }
+
+            // 2. 새 이미지 저장
+            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
+            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+
+            File uploadDir = new File(staticPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            File saveFile = new File(uploadDir, savedFileName);
+            image.transferTo(saveFile);
+
+            // 프론트에서 접근 가능한 URL 경로
+            String imageUrl = "/" + today + "/" + savedFileName;
+            itemEntity.setItemImageUrl(imageUrl);
+        }
+
+        return ItemCreateUpdateResponse.fromEntity(itemEntity);
+
     }
 
 /**
