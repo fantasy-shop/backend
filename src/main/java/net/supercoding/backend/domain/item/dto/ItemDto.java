@@ -11,7 +11,7 @@ public class ItemDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ItemCreateRequest {
+    public static class ItemCreateUpdateRequest {
 
         private String itemName;
         private String itemEffect;
@@ -21,15 +21,15 @@ public class ItemDto {
         private String itemCategory;
 
         public static ItemEntity toEntity(
-                ItemCreateRequest itemCreateRequest
+                ItemCreateUpdateRequest itemCreateUpdateRequest
         ){
             return ItemEntity.builder()
-                    .itemName(itemCreateRequest.getItemName())
-                    .itemEffect(itemCreateRequest.getItemEffect())
-                    .itemPrice(itemCreateRequest.getItemPrice())
-                    .itemDescription(itemCreateRequest.getItemDescription())
-                    .itemInventory(itemCreateRequest.getItemInventory())
-                    .itemCategory(itemCreateRequest.getItemCategory())
+                    .itemName(itemCreateUpdateRequest.getItemName())
+                    .itemEffect(itemCreateUpdateRequest.getItemEffect())
+                    .itemPrice(itemCreateUpdateRequest.getItemPrice())
+                    .itemDescription(itemCreateUpdateRequest.getItemDescription())
+                    .itemInventory(itemCreateUpdateRequest.getItemInventory())
+                    .itemCategory(itemCreateUpdateRequest.getItemCategory())
                     .build();
         }
     }
@@ -39,14 +39,14 @@ public class ItemDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ItemCreateResponse {
+    public static class ItemCreateUpdateResponse {
 
         private Long itemPk;
 
-        public static ItemCreateResponse fromEntity(
+        public static ItemCreateUpdateResponse fromEntity(
                 ItemEntity itemEntity
         ) {
-            return ItemCreateResponse.builder()
+            return ItemCreateUpdateResponse.builder()
                     .itemPk(itemEntity.getItemPk())
                     .build();
         }
