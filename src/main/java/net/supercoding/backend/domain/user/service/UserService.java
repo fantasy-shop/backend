@@ -1,16 +1,15 @@
 package net.supercoding.backend.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.SignupRequestDto;
-import net.supercoding.backend.domain.user.dto.UserProfileResponseDto;
-import net.supercoding.backend.domain.user.dto.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -75,4 +74,5 @@ public class UserService {
         // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
         return user;
     }
+
 }
