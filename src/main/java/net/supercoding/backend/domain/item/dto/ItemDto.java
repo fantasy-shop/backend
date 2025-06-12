@@ -66,6 +66,7 @@ public class ItemDto {
         private String itemDescription;
         private Long itemInventory;
         private String itemCategory;
+        private String itemImageUrl;
         private LocalDateTime createdAt;
 
         public static ItemListResponse fromEntity(ItemEntity itemEntity) {
@@ -78,6 +79,7 @@ public class ItemDto {
                     .itemDescription(itemEntity.getItemDescription())
                     .itemInventory(itemEntity.getItemInventory())
                     .itemCategory(itemEntity.getItemCategory())
+                    .itemImageUrl(itemEntity.getItemImageUrl())
                     .createdAt(itemEntity.getItemCreatedAt())
                     .build();
         }

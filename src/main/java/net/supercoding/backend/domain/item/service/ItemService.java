@@ -1,10 +1,13 @@
 package net.supercoding.backend.domain.item.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateRequest;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateResponse;
@@ -14,6 +17,7 @@ import net.supercoding.backend.domain.item.repository.ItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -23,9 +27,29 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public ItemCreateResponse itemCreate(ItemCreateRequest itemCreateRequest) {
+    public ItemCreateResponse itemCreate(ItemCreateRequest itemCreateRequest, MultipartFile image)
+            throws IOException {
 
         ItemEntity newItemEntity = ItemCreateRequest.toEntity(itemCreateRequest);
+
+        if (image != null && !image.isEmpty()) {
+            String today = LocalDate.now().toString();
+
+            // src/main/resources/static 경로를 절대 경로로 지정
+            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
+            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+
+            File uploadDir = new File(staticPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            File saveFile = new File(uploadDir, savedFileName);
+            image.transferTo(saveFile);
+
+            // 프론트에서 접근 가능한 URL 경로
+            String imageUrl = "/" + today + "/" + savedFileName;
+            newItemEntity.setItemImageUrl(imageUrl);
+        }
 
         ItemEntity savedItemEntity = itemRepository.save(newItemEntity);
 
