@@ -72,8 +72,6 @@ public class UserService {
             user.setProfileImageUrl(imageUrl);
         }
 
-
-
         // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
         return user;
     }
