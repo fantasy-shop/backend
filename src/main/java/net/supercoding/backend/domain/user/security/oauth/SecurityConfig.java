@@ -66,6 +66,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 현재 수동으로 로그인을 검증하고 있기에 필요가 없음.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -86,4 +87,3 @@ public class SecurityConfig {
 
 
 }
-

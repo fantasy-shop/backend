@@ -33,7 +33,7 @@ public class UserController {
     // 로그인용 메서드
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto dto) {
-        var user = userService.authenticate(dto); // email, password 검증
+        User user = userService.authenticate(dto); // email, password 검증
         String token = jwtTokenProvider.createToken(user.getEmail());
 
         return ResponseEntity.ok().body(Map.of("token", token));
