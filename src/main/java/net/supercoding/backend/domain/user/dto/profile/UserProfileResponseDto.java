@@ -1,4 +1,4 @@
-package net.supercoding.backend.domain.user.dto;
+package net.supercoding.backend.domain.user.dto.profile;
 
 import lombok.Builder;
 import lombok.Getter;

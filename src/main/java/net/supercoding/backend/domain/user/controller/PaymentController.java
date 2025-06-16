@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.payment.CreatePaymentRequestDto;
 import net.supercoding.backend.domain.user.dto.payment.PaymentResponseDto;
 import net.supercoding.backend.domain.user.dto.payment.PaymentSimpleDto;
-import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
+import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.payment.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

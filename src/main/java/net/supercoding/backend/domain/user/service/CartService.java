@@ -3,15 +3,18 @@ package net.supercoding.backend.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
 import net.supercoding.backend.domain.item.repository.ItemRepository;
-import net.supercoding.backend.domain.user.dto.AddToCartResponseDto;
-import net.supercoding.backend.domain.user.dto.CartItemQuantityUpdateRequestDto;
-import net.supercoding.backend.domain.user.dto.CartItemResponseDto;
+import net.supercoding.backend.domain.user.dto.cart.AddToCartResponseDto;
+import net.supercoding.backend.domain.user.dto.cart.CartItemQuantityUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.cart.CartItemResponseDto;
+import net.supercoding.backend.domain.user.dto.cart.GuestCartItemDto;
 import net.supercoding.backend.domain.user.entity.CartItem;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.CartItemRepository;
+import net.supercoding.backend.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +25,7 @@ public class CartService {
 
     private final CartItemRepository cartItemRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public AddToCartResponseDto addToCart(User user, Long itemId, int quantity) {
@@ -33,7 +37,11 @@ public class CartService {
                     existingItem.setQuantity(existingItem.getQuantity() + quantity);
                     return existingItem;
                 })
-                .orElseGet(() -> cartItemRepository.save(new CartItem(user, item, quantity)));
+                .orElseGet(() -> {
+                    CartItem newCartItem = new CartItem(user, item, quantity);
+                    newCartItem.setAddedAt(LocalDateTime.now());
+                    return cartItemRepository.save(newCartItem);
+                });
 
         return AddToCartResponseDto.from(cartItem);
     }
@@ -63,6 +71,41 @@ public class CartService {
             }
         }
     }
+
+    // 장바구니 병합
+    @Transactional
+    public void syncGuestCart(Long userId, List<GuestCartItemDto> guestItems) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        for (GuestCartItemDto guestItem : guestItems) {
+//            if (guestItem.getQuantity() <= 0) {
+//                continue; // 수량이 0 이하인 경우 무시
+//            }
+
+            ItemEntity item = itemRepository.findById(guestItem.getItemPk())
+                    .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+//            // 재고 체크 예시 (옵션)
+//            if (guestItem.getQuantity() > item.getItemInventory()) {
+//                throw new IllegalArgumentException("상품 재고가 부족합니다: " + item.getItemName());
+//            }
+
+            Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndItem(user, item);
+
+            if (existingCartItem.isPresent()) {
+                CartItem cartItem = existingCartItem.get();
+                cartItem.setQuantity(cartItem.getQuantity() + guestItem.getQuantity());
+                // JPA 영속성 컨텍스트 덕분에 따로 save() 호출 불필요
+            } else {
+                CartItem newCartItem = new CartItem(user, item, guestItem.getQuantity());
+                newCartItem.setAddedAt(LocalDateTime.now());
+                cartItemRepository.save(newCartItem);
+            }
+        }
+    }
+
+
 
 
 
