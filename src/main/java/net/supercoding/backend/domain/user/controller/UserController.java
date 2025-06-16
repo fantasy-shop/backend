@@ -55,6 +55,8 @@ public class UserController {
         return ResponseEntity.ok(profile);
     }
 
+
+
     // 토큰 정보를 날릴 때
     @GetMapping("/auth")
     public ResponseEntity<UserAuthResponseDto> getAuthenticatedUser(
