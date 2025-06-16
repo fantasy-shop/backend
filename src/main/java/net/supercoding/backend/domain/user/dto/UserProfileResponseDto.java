@@ -16,6 +16,7 @@ public class UserProfileResponseDto {
     private String profileImageUrl;
     private LocalDateTime createAt;
     private String userStatus;
+    private Boolean isAdmin;
 
     public static UserProfileResponseDto from(User user) {
         return UserProfileResponseDto.builder()
@@ -26,6 +27,7 @@ public class UserProfileResponseDto {
                 .profileImageUrl(user.getProfileImageUrl())
                 .createAt(user.getCreateAt())
                 .userStatus(user.getUserStatus().name())
+                .isAdmin(user.getIsAdmin())
                 .build();
     }
 }

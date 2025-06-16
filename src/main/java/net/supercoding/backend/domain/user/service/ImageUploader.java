@@ -12,16 +12,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImageUploader {
 
-    private final String uploadDir = "/my/local/upload/path"; // 혹은 properties 설정
+    private final String uploadDir = System.getProperty("user.dir") + "/uploads";
 
     public String upload(MultipartFile file) {
+        File uploadPath = new File(uploadDir);
+        if (!uploadPath.exists()) {
+            boolean created = uploadPath.mkdirs();
+            if (!created) {
+                throw new RuntimeException("업로드 디렉토리 생성 실패");
+            }
+        }
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        File dest = new File(uploadPath, fileName);
+
         try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File dest = new File(uploadDir + File.separator + fileName);
             file.transferTo(dest);
-            return "/images/" + fileName; // 클라이언트에 제공할 접근 가능한 URL
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드 실패", e);
         }
+
+        return "/uploads/" + fileName;
     }
 }
+
