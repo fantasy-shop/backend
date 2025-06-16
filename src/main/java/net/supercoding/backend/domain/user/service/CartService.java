@@ -64,11 +64,12 @@ public class CartService {
                 throw new RuntimeException("권한이 없습니다: " + update.getCartItemId());
             }
 
-            if (update.getQuantity() <= 0) {
-                cartItemRepository.delete(cartItem); // 수량 0 이하면 삭제 처리
-            } else {
-                cartItem.setQuantity(update.getQuantity());
-            }
+//            if (update.getQuantity() <= 0) {
+//                cartItemRepository.delete(cartItem); // 수량 0 이하면 삭제 처리
+//            } else {
+//                cartItem.setQuantity(update.getQuantity());
+//            }
+            cartItem.setQuantity(update.getQuantity());
         }
     }
 
