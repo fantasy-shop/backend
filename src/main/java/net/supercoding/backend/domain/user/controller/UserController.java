@@ -1,15 +1,12 @@
 package net.supercoding.backend.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.SignupRequestDto;
-import net.supercoding.backend.domain.user.dto.UserProfileResponseDto;
-import net.supercoding.backend.domain.user.dto.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.entity.User;
-import net.supercoding.backend.domain.user.security.CustomUserDetailsService;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
 import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -57,4 +54,21 @@ public class UserController {
         UserProfileResponseDto profile = userService.getMyProfile(updatedUser);
         return ResponseEntity.ok(profile);
     }
+
+    // 토큰 정보를 날릴 때
+    @GetMapping("/auth")
+    public ResponseEntity<UserAuthResponseDto> getAuthenticatedUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null || userDetails.getUser() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(new UserAuthResponseDto(userDetails.getUser()));
+    }
 }
+
+
+
+
+
