@@ -1,4 +1,4 @@
-package net.supercoding.backend.domain.user.dto;
+package net.supercoding.backend.domain.user.dto.cart;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

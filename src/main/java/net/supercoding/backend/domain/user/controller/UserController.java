@@ -2,9 +2,11 @@ package net.supercoding.backend.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.*;
+import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
+import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
-import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
+import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +69,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(new UserAuthResponseDto(userDetails.getUser()));
+    }
+
+    // 회원탈퇴 API
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdrawUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build(); // 인증 정보 없으면 401 Unauthorized
+        }
+
+        userService.deleteUserById(userDetails.getUser().getUserPk());
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
 
