@@ -8,6 +8,7 @@ import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemListResponse;
 import net.supercoding.backend.domain.item.service.ItemService;
+import net.supercoding.backend.domain.user.repository.CartItemRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CartItemRepository cartItemRepository;
 
     @PostMapping("")
     public ItemCreateUpdateResponse itemCreate(
@@ -37,16 +39,18 @@ public class ItemController {
 
     @GetMapping("")
     public List<ItemListResponse> itemList(
+            @RequestParam(value = "sortCategory", defaultValue = "noSorted") String sortCategory,
             @RequestParam(value = "itemCategory", defaultValue = "all") String itemCategory,
-            @RequestParam(value = "sortCategory", defaultValue = "noSorted") String sortCategory
+            @RequestParam(value = "itemNameKeyword", defaultValue = "") String itemNameKeyword
     ){
-        return itemService.itemList(itemCategory, sortCategory);
+        return itemService.itemList(itemCategory, sortCategory, itemNameKeyword);
     }
 
     @DeleteMapping("/{itemPk}")
     public String itemDelete(
             @PathVariable("itemPk") Long itemPk
     ) {
+        cartItemRepository.deleteByItem_ItemPk(itemPk);
         return itemService.itemDelete(itemPk);
     }
 

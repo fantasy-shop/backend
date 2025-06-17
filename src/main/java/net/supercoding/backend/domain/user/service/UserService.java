@@ -1,6 +1,7 @@
 package net.supercoding.backend.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
+import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
@@ -11,6 +12,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

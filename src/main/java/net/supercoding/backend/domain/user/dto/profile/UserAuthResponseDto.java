@@ -1,5 +1,6 @@
 package net.supercoding.backend.domain.user.dto.profile;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import net.supercoding.backend.domain.user.entity.User;
 
@@ -14,7 +15,8 @@ public class UserAuthResponseDto {
     private String profileImageUrl;
     private LocalDateTime createAt;
     private String userStatus;
-    private Boolean isAdmin;
+    @JsonProperty("isAdmin")
+    private boolean isAdmin;
 
     public UserAuthResponseDto(User user) {
         this.userPk = user.getUserPk();

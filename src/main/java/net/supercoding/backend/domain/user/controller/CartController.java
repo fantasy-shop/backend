@@ -1,10 +1,10 @@
 package net.supercoding.backend.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.cart.AddToCartRequestDto;
-import net.supercoding.backend.domain.user.dto.cart.AddToCartResponseDto;
-import net.supercoding.backend.domain.user.dto.cart.CartItemResponseDto;
-import net.supercoding.backend.domain.user.dto.cart.CartItemsQuantityUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.AddToCartRequestDto;
+import net.supercoding.backend.domain.user.dto.AddToCartResponseDto;
+import net.supercoding.backend.domain.user.dto.CartItemResponseDto;
+import net.supercoding.backend.domain.user.dto.CartItemsQuantityUpdateRequestDto;
 import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.CartService;
 import org.springframework.http.ResponseEntity;

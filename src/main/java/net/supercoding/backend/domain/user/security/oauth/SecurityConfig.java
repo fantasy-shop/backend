@@ -7,7 +7,6 @@ import net.supercoding.backend.domain.user.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,8 +19,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -32,7 +29,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
-                .cors(withDefaults()) // 자동으로 작동하지만 해주면 좋음
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (개발 편의용)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
@@ -42,8 +38,8 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**"
                         ).permitAll() // 회원가입, 로그인, 정적리소스는 누구나 접근 가능
-                        .anyRequest().authenticated() // 나머지는 인증 필요, 이게 있어야지만 AuthenticationPrincipal 작동
-//                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능
+//                        .anyRequest().authenticated() // 나머지는 인증 필요
+                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능
                 )
 //                .formLogin(form -> form
 //                        .loginProcessingUrl("/users/login")

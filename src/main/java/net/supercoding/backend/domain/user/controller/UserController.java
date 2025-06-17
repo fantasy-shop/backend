@@ -1,11 +1,7 @@
 package net.supercoding.backend.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.profile.UserAuthResponseDto;
-import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
-import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
-import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
+import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
 import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;

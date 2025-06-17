@@ -69,21 +69,12 @@ public class ItemService {
     @Transactional(readOnly = true)
     public List<ItemListResponse> itemList(
             String itemCategory,
-            String sortCategory
+            String sortCategory,
+            String itemNameKeyword
     ) {
 
-        System.out.println("itemCategory: " + itemCategory);
-        System.out.println("sortCategory: " + sortCategory);
-
-
-        List<ItemEntity> itemEntitieList;
-
-        // 프론트엔드로부터 전달받은 itemCategory로 필터
-        if (Objects.equals(itemCategory, "all")) {
-            itemEntitieList = itemRepository.findAll();
-        } else {
-            itemEntitieList = itemRepository.findByItemCategory(itemCategory);
-        }
+        // 필터링 + 키워드 조건에 맞는 리스트 조회 (JPQL 사용)
+        List<ItemEntity> itemEntitieList = itemRepository.findByCategoryAndKeyword(itemCategory, itemNameKeyword);
 
         // 프론트엔드로부터 전달받은 sortCategory로 정렬
         if ("priceDesc".equals(sortCategory)) {

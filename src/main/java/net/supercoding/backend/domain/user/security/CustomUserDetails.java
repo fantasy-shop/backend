@@ -1,7 +1,6 @@
-package net.supercoding.backend.domain.user.security.oauth;
+package net.supercoding.backend.domain.user.security;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +19,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_USER");
+        if (user.getIsAdmin()) {
+            return List.of(() -> "ROLE_ADMIN");
+        } else {
+            return List.of(() -> "ROLE_USER");
+        }
     }
 
     @Override
