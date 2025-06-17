@@ -1,6 +1,7 @@
 package net.supercoding.backend.domain.user.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import net.supercoding.backend.domain.user.enums.UserStatus;
@@ -34,8 +35,12 @@ public class User {
     private String address;
 
     @Column(nullable = false)
-    @Builder.Default
-    private Boolean isAdmin = false;
+    private boolean isAdmin = false;
+
+    @JsonProperty("isAdmin")
+    public boolean getIsAdmin() {
+        return isAdmin;
+    }
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

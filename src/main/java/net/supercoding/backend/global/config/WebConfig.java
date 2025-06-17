@@ -2,6 +2,7 @@ package net.supercoding.backend.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -14,4 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:uploads/");
         // "file:" 접두어는 파일 시스템 경로임을 나타냅니다.
     }
+
+
 }
