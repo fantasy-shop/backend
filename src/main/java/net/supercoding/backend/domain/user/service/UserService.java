@@ -33,7 +33,7 @@ public class UserService {
                 .userName(dto.getUserName())
                 .phoneNumber(dto.getPhoneNumber())
                 .address(dto.getAddress())
-                .isAdmin(dto.getIsAdmin())
+                .isAdmin(dto.isAdmin())
                 .build();
 
         userRepository.save(user);

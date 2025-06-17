@@ -1,5 +1,6 @@
 package net.supercoding.backend.domain.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -9,5 +10,6 @@ public class SignupRequestDto {
     private String userName;
     private String phoneNumber;
     private String address;
-    private Boolean isAdmin;
+    @JsonProperty("isAdmin")
+    private boolean isAdmin;
 }

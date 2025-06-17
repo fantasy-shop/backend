@@ -25,6 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+
+        // 로그인, 회원가입, 정적 파일 등은 필터 제외
+        if (path.startsWith("/users/login") || path.startsWith("/users/signup") || path.startsWith("/item") ||
+                path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
