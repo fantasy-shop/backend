@@ -29,17 +29,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (개발 편의용)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/users/signup",
                                 "/users/login",
+                                "/item",
+                                "/item/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**"
                         ).permitAll() // 회원가입, 로그인, 정적리소스는 누구나 접근 가능
-//                        .anyRequest().authenticated() // 나머지는 인증 필요
-                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능
+                        .anyRequest().authenticated() // 나머지는 인증 필요
+//                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능
                 )
 //                .formLogin(form -> form
 //                        .loginProcessingUrl("/users/login")
