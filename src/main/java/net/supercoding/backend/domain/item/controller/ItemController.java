@@ -37,10 +37,11 @@ public class ItemController {
 
     @GetMapping("")
     public List<ItemListResponse> itemList(
+            @RequestParam(value = "sortCategory", defaultValue = "noSorted") String sortCategory,
             @RequestParam(value = "itemCategory", defaultValue = "all") String itemCategory,
-            @RequestParam(value = "sortCategory", defaultValue = "noSorted") String sortCategory
+            @RequestParam(value = "itemNameKeyword", defaultValue = "") String itemNameKeyword
     ){
-        return itemService.itemList(itemCategory, sortCategory);
+        return itemService.itemList(itemCategory, sortCategory, itemNameKeyword);
     }
 
     @DeleteMapping("/{itemPk}")
