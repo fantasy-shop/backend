@@ -1,6 +1,5 @@
 package net.supercoding.backend.domain.user.security.oauth;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.security.CustomUserDetailsService;
 import net.supercoding.backend.domain.user.security.jwt.JwtAuthenticationFilter;
@@ -10,7 +9,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,9 +41,7 @@ public class SecurityConfig {
                                 "/item/**",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**",
-                                "/uploads/**",
-                                "/2025-06-12/**"
+                                "/images/**"
                         ).permitAll() // 회원가입, 로그인, 정적리소스는 누구나 접근 가능
                         .anyRequest().authenticated() // 나머지는 인증 필요
 //                        .anyRequest().permitAll() // 개발을 위해 임시로 모두 접근 가능

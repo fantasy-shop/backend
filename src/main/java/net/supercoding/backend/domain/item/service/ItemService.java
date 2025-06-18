@@ -1,14 +1,7 @@
 package net.supercoding.backend.domain.item.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateRequest;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
@@ -20,7 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import net.coobird.thumbnailator.Thumbnails;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -176,7 +176,7 @@ public class ItemService {
 
             // 2. 새 이미지 저장
             String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
-            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+            String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -186,7 +186,7 @@ public class ItemService {
             image.transferTo(saveFile);
 
             // 프론트에서 접근 가능한 URL 경로
-            String imageUrl = "/" + today + "/" + savedFileName;
+            String imageUrl = "/images/" + today + "/" + savedFileName;
             itemEntity.setItemImageUrl(imageUrl);
         }
 
