@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +43,30 @@ public class ItemService {
         if (image != null && !image.isEmpty()) {
             String today = LocalDate.now().toString();
 
-            // src/main/resources/static 경로를 절대 경로로 지정
-            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
+            String projectRoot = System.getProperty("user.dir");
             String staticPath = projectRoot + "/src/main/resources/static/" + today;
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            File saveFile = new File(uploadDir, savedFileName);
-            image.transferTo(saveFile);
+            // 파일 이름 및 확장자 바꾸기
 
-            // 프론트에서 접근 가능한 URL 경로
+            // 파일의 원래 이름에서 확장자 제거
+            String originalName = image.getOriginalFilename();
+            String nameWithoutExtension = originalName != null && originalName.contains(".")
+                    ? originalName.substring(0, originalName.lastIndexOf('.'))
+                    : originalName;
+
+            String savedFileName = UUID.randomUUID() + "_" + nameWithoutExtension + ".jpg";
+            File saveFile = new File(uploadDir, savedFileName);
+
+            // Thumbnailator 이미지 처리용 자바 라이브러리 사용
+            Thumbnails.of(image.getInputStream())
+                    .size(450, 450)         // 비율 유지하면서 둘 중 큰 쪽을 450px로 맞춤
+                    .outputFormat("jpg")    // JPEG 형식 저장
+                    .outputQuality(0.85)    // 85% 품질 압축
+                    .toFile(saveFile);
+
             String imageUrl = "/" + today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }

@@ -35,6 +35,7 @@ public class User {
     private String address;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isAdmin = false;
 
     @JsonProperty("isAdmin")

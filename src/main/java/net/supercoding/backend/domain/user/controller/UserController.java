@@ -1,17 +1,20 @@
 package net.supercoding.backend.domain.user.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
 import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.UserService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequestDto dto) {
@@ -67,6 +71,31 @@ public class UserController {
         }
 
         return ResponseEntity.ok(new UserAuthResponseDto(userDetails.getUser()));
+    }
+
+    // 회원탈퇴 API
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdrawUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build(); // 인증 정보 없으면 401 Unauthorized
+        }
+
+        userService.deleteUserById(userDetails.getUser().getUserPk());
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
+    // 로그아웃 api
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            long expiration = jwtTokenProvider.getExpiration(token);
+            if (expiration > 0) {
+                redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
+            }
+        }
+        return ResponseEntity.ok().build();
     }
 }
 
