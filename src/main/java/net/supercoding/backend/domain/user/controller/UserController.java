@@ -1,11 +1,18 @@
 package net.supercoding.backend.domain.user.controller;
 
+// 임포트 갱신 커밋용 주석
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.*;
+import net.supercoding.backend.domain.user.dto.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.SignupRequestDto;
+import net.supercoding.backend.domain.user.dto.UserAuthResponseDto;
+import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
+import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
+import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
-import net.supercoding.backend.domain.user.security.oauth.CustomUserDetails;
+
 import net.supercoding.backend.domain.user.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -13,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -48,17 +56,16 @@ public class UserController {
         return ResponseEntity.ok(profile);
     }
 
-    // 내 프로필 수정
+    // 내 프로필 수정 (form-data, 이미지 포함)
     @PutMapping("/me")
     public ResponseEntity<UserProfileResponseDto> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @ModelAttribute UserProfileUpdateRequestDto updateDto
-    ) {
-        User updatedUser = userService.updateUserProfile(userDetails.getUser().getUserPk(),updateDto);
-        UserProfileResponseDto profile = userService.getMyProfile(updatedUser);
-        return ResponseEntity.ok(profile);
+    ) throws IOException {
+        User updatedUser = userService.updateUserProfile(userDetails.getUser().getUserPk(), updateDto);
+        UserProfileResponseDto dto = userService.getMyProfile(updatedUser);
+        return ResponseEntity.ok(dto);
     }
-
 
 
     // 토큰 정보를 날릴 때

@@ -1,5 +1,6 @@
 package net.supercoding.backend.domain.user.service;
 
+import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
@@ -12,6 +13,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.time.LocalDate;
+import java.util.UUID;
 
 import java.util.List;
 
@@ -20,7 +26,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploader imageUploader;
+//    private final ImageUploader imageUploader;
 
     @Transactional
     public void registerUser(SignupRequestDto dto) {
@@ -62,21 +68,67 @@ public class UserService {
 
     // 유저 정보 업데이트
     @Transactional
-    public User updateUserProfile(Long userPk, UserProfileUpdateRequestDto updateDto) {
+    public User updateUserProfile(Long userPk, UserProfileUpdateRequestDto updateDto) throws IOException, java.io.IOException {
         User user = userRepository.findById(userPk)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         if (updateDto.getUserName() != null) user.setUserName(updateDto.getUserName());
         if (updateDto.getPhoneNumber() != null) user.setPhoneNumber(updateDto.getPhoneNumber());
         if (updateDto.getAddress() != null) user.setAddress(updateDto.getAddress());
-        if (updateDto.getProfileImage() != null && !updateDto.getProfileImage().isEmpty()) {
-            // 이미지 저장 처리 (예: 로컬 디스크 or S3)
-            String imageUrl = imageUploader.upload(updateDto.getProfileImage());
+
+        MultipartFile image = updateDto.getProfileImage();
+        if (image != null && !image.isEmpty()) {
+            String today = LocalDate.now().toString();
+
+            // 기존 이미지 삭제
+            String existingImageUrl = user.getProfileImageUrl();
+            if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
+                String projectRoot = System.getProperty("user.dir");
+                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                File existingFile = new File(existingImagePath);
+                if (existingFile.exists()) existingFile.delete();
+            }
+
+            // 새 이미지 저장
+            String projectRoot = System.getProperty("user.dir");
+            String uploadDirPath = projectRoot + "/src/main/resources/static/" + today;
+            File uploadDir = new File(uploadDirPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            File savedFile = new File(uploadDir, savedFileName);
+            image.transferTo(savedFile);
+
+            String imageUrl = "/" + today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 
-        // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
         return user;
+    }
+
+//    @Transactional
+//    public User updateUserProfile(Long userPk, UserProfileUpdateRequestDto updateDto) {
+//        User user = userRepository.findById(userPk)
+//                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+//
+//        if (updateDto.getUserName() != null) user.setUserName(updateDto.getUserName());
+//        if (updateDto.getPhoneNumber() != null) user.setPhoneNumber(updateDto.getPhoneNumber());
+//        if (updateDto.getAddress() != null) user.setAddress(updateDto.getAddress());
+//        if (updateDto.getProfileImage() != null && !updateDto.getProfileImage().isEmpty()) {
+//            // 이미지 저장 처리 (예: 로컬 디스크 or S3)
+//            String imageUrl = imageUploader.upload(updateDto.getProfileImage());
+//            user.setProfileImageUrl(imageUrl);
+//        }
+//
+//        // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
+//        return user;
+//    }
+
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+        // 사용자 존재 여부 확인 및 예외 처리 가능
+        userRepository.deleteById(userId);
     }
 
 }
