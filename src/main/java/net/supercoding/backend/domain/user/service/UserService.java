@@ -2,8 +2,8 @@ package net.supercoding.backend.domain.user.service;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.*;
-import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.SignupRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
 import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
@@ -91,7 +91,7 @@ public class UserService {
 
             // 새 이미지 저장
             String projectRoot = System.getProperty("user.dir");
-            String uploadDirPath = projectRoot + "/src/main/resources/static/" + today;
+            String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
@@ -99,7 +99,7 @@ public class UserService {
             File savedFile = new File(uploadDir, savedFileName);
             image.transferTo(savedFile);
 
-            String imageUrl = "/" + today + "/" + savedFileName;  // 상대경로
+            String imageUrl = "/images/" + today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 
