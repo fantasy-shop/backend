@@ -12,6 +12,7 @@ import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestD
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
+
 import net.supercoding.backend.domain.user.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -103,7 +104,6 @@ public class UserController {
         }
         return ResponseEntity.ok().build();
     }
-
 }
 
 

@@ -6,6 +6,7 @@ import net.supercoding.backend.domain.user.dto.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.SignupRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.UUID;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +43,6 @@ public class UserService {
                 .userName(dto.getUserName())
                 .phoneNumber(dto.getPhoneNumber())
                 .address(dto.getAddress())
-                .isAdmin(dto.isAdmin())
                 .build();
 
         userRepository.save(user);

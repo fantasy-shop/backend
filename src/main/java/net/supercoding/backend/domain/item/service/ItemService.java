@@ -34,13 +34,13 @@ public class ItemService {
     @Transactional
     public ItemCreateUpdateResponse itemCreate(
             ItemCreateUpdateRequest itemCreateUpdateRequest,
-            MultipartFile image
+            MultipartFile itemImage
     ) throws IOException {
 
         ItemEntity newItemEntity = ItemCreateUpdateRequest.toEntity(itemCreateUpdateRequest);
 
         // 이미지 저장 코드
-        if (image != null && !image.isEmpty()) {
+        if (itemImage != null && !itemImage.isEmpty()) {
             String today = LocalDate.now().toString();
 
             String projectRoot = System.getProperty("user.dir");
@@ -50,9 +50,8 @@ public class ItemService {
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
             // 파일 이름 및 확장자 바꾸기
-
             // 파일의 원래 이름에서 확장자 제거
-            String originalName = image.getOriginalFilename();
+            String originalName = itemImage.getOriginalFilename();
             String nameWithoutExtension = originalName != null && originalName.contains(".")
                     ? originalName.substring(0, originalName.lastIndexOf('.'))
                     : originalName;
@@ -61,7 +60,7 @@ public class ItemService {
             File saveFile = new File(uploadDir, savedFileName);
 
             // Thumbnailator 이미지 처리용 자바 라이브러리 사용
-            Thumbnails.of(image.getInputStream())
+            Thumbnails.of(itemImage.getInputStream())
                     .size(450, 450)         // 비율 유지하면서 둘 중 큰 쪽을 450px로 맞춤
                     .outputFormat("jpg")    // JPEG 형식 저장
                     .outputQuality(0.85)    // 85% 품질 압축
@@ -145,7 +144,7 @@ public class ItemService {
     public ItemCreateUpdateResponse itemUpdate(
             Long itemPk,
             ItemCreateUpdateRequest itemCreateUpdateRequest,
-            MultipartFile image
+            MultipartFile itemImage
     ) throws IOException {
 
         ItemEntity itemEntity = itemRepository.findById(itemPk)
@@ -159,8 +158,7 @@ public class ItemService {
         itemEntity.setItemCategory(itemCreateUpdateRequest.getItemCategory());
 
         // 이미지 수정 코드
-        if (image != null && !image.isEmpty()) {
-            String today = LocalDate.now().toString();
+        if (itemImage != null && !itemImage.isEmpty()) {
 
             // 1. 기존 이미지 삭제
             String existingImageUrl = itemEntity.getItemImageUrl(); // 예: "/2025-06-12/abc_image.png"
@@ -175,18 +173,31 @@ public class ItemService {
             }
 
             // 2. 새 이미지 저장
+            String today = LocalDate.now().toString();
+
             String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
             String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            File saveFile = new File(uploadDir, savedFileName);
-            image.transferTo(saveFile);
+            String originalName = itemImage.getOriginalFilename();
+            String nameWithoutExtension = originalName != null && originalName.contains(".")
+                    ? originalName.substring(0, originalName.lastIndexOf('.'))
+                    : originalName;
 
-            // 프론트에서 접근 가능한 URL 경로
+            String savedFileName = UUID.randomUUID() + "_" + nameWithoutExtension + ".jpg";
+            File saveFile = new File(uploadDir, savedFileName);
+
+
+            Thumbnails.of(itemImage.getInputStream())
+                    .size(450, 450)         // 비율 유지하면서 둘 중 큰 쪽을 450px로 맞춤
+                    .outputFormat("jpg")    // JPEG 형식 저장
+                    .outputQuality(0.85)    // 85% 품질 압축
+                    .toFile(saveFile);
+
             String imageUrl = "/images/" + today + "/" + savedFileName;
+
             itemEntity.setItemImageUrl(imageUrl);
         }
 

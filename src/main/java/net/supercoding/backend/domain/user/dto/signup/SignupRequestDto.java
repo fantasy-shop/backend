@@ -1,4 +1,4 @@
-package net.supercoding.backend.domain.user.dto;
+package net.supercoding.backend.domain.user.dto.signup;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
