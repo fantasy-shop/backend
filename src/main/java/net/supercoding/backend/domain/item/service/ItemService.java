@@ -49,7 +49,15 @@ public class ItemService {
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String savedFileName = UUID.randomUUID() + ".jpg";
+            // 파일 이름 및 확장자 바꾸기
+
+            // 파일의 원래 이름에서 확장자 제거
+            String originalName = image.getOriginalFilename();
+            String nameWithoutExtension = originalName != null && originalName.contains(".")
+                    ? originalName.substring(0, originalName.lastIndexOf('.'))
+                    : originalName;
+
+            String savedFileName = UUID.randomUUID() + "_" + nameWithoutExtension + ".jpg";
             File saveFile = new File(uploadDir, savedFileName);
 
             // Thumbnailator 이미지 처리용 자바 라이브러리 사용
