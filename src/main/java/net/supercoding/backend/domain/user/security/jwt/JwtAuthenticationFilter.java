@@ -44,8 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 토큰이 redis에 저장되어 있는지 확인
             if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("This token is blacklisted.");
                 return;
             }
+
 
             if (jwtTokenProvider.validateToken(token)) {
                 String email = jwtTokenProvider.getEmailFromToken(token);
