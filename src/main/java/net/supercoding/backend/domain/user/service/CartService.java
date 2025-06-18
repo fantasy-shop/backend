@@ -3,9 +3,9 @@ package net.supercoding.backend.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
 import net.supercoding.backend.domain.item.repository.ItemRepository;
-import net.supercoding.backend.domain.user.dto.AddToCartResponseDto;
-import net.supercoding.backend.domain.user.dto.CartItemQuantityUpdateRequestDto;
-import net.supercoding.backend.domain.user.dto.CartItemResponseDto;
+import net.supercoding.backend.domain.user.dto.cart.AddToCartResponseDto;
+import net.supercoding.backend.domain.user.dto.cart.CartItemQuantityUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.cart.CartItemResponseDto;
 import net.supercoding.backend.domain.user.entity.CartItem;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.CartItemRepository;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

@@ -4,15 +4,14 @@ package net.supercoding.backend.domain.user.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.SignupRequestDto;
-import net.supercoding.backend.domain.user.dto.UserAuthResponseDto;
+import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.profile.UserAuthResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
-
 import net.supercoding.backend.domain.user.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
