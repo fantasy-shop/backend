@@ -2,8 +2,7 @@ package net.supercoding.backend.domain.user.service;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.SignupRequestDto;
+import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
 import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
@@ -18,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
