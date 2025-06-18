@@ -32,9 +32,9 @@ public class ItemController {
     @PostMapping("")
     public ItemCreateUpdateResponse itemCreate(
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
     ) throws IOException {
-        return itemService.itemCreate(itemCreateUpdateRequest, image);
+        return itemService.itemCreate(itemCreateUpdateRequest, itemImage);
     }
 
     @GetMapping("")
@@ -65,8 +65,8 @@ public class ItemController {
     public ItemCreateUpdateResponse itemUpdate(
             @PathVariable("itemPk") Long itemPk,
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
     ) throws IOException {
-        return itemService.itemUpdate(itemPk, itemCreateUpdateRequest, image);
+        return itemService.itemUpdate(itemPk, itemCreateUpdateRequest, itemImage);
     }
 }
