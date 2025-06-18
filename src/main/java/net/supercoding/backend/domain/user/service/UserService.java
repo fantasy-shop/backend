@@ -2,14 +2,18 @@ package net.supercoding.backend.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.*;
+import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +37,6 @@ public class UserService {
                 .userName(dto.getUserName())
                 .phoneNumber(dto.getPhoneNumber())
                 .address(dto.getAddress())
-                .isAdmin(dto.isAdmin())
                 .build();
 
         userRepository.save(user);
@@ -74,12 +77,6 @@ public class UserService {
 
         // JPA 변경감지에 의해 별도의 save 호출 없이도 변경내용 반영됨
         return user;
-    }
-
-    @Transactional
-    public void deleteUserById(Long userId) {
-        // 사용자 존재 여부 확인 및 예외 처리 가능
-        userRepository.deleteById(userId);
     }
 
 }
