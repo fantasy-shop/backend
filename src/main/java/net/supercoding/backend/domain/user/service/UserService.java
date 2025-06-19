@@ -82,15 +82,22 @@ public class UserService {
             // 기존 이미지 삭제
             String existingImageUrl = user.getProfileImageUrl();
             if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-                String projectRoot = System.getProperty("user.dir");
-                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 기존 (JAR 환경에서 문제)
+                // String projectRoot = System.getProperty("user.dir");
+                // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 변경: EC2 등 실제 저장 경로로 지정
+                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
+
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
             }
 
             // 새 이미지 저장
-            String projectRoot = System.getProperty("user.dir");
-            String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // String projectRoot = System.getProperty("user.dir");
+            // String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 변경: EC2 등 실제 저장 경로로 지정
+            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
+
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
