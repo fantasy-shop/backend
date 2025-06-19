@@ -43,8 +43,12 @@ public class ItemService {
         if (itemImage != null && !itemImage.isEmpty()) {
             String today = LocalDate.now().toString();
 
-            String projectRoot = System.getProperty("user.dir");
-            String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 기존 (JAR 환경에서 경로 문제 있음)
+            // String projectRoot = System.getProperty("user.dir");
+            // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 변경 (EC2 등 실제 저장 경로로 지정)
+            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -173,8 +177,11 @@ public class ItemService {
             // 1. 기존 이미지 삭제
             String existingImageUrl = itemEntity.getItemImageUrl(); // 예: "/2025-06-12/abc_image.png"
             if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-                String projectRoot = System.getProperty("user.dir");
-                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 이전에는 프로젝트 루트 + /src/main/resources/static + 이미지 경로를 사용했음 (JAR 환경에서는 경로가 없음)
+                // String projectRoot = System.getProperty("user.dir");
+                // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // → EC2 등에서 동작하게 하려면 실제 저장 위치를 지정해야 함
+                String existingImagePath = "/home/ec2-user/images" + existingImageUrl; // 변경된 부분
 
                 File existingImageFile = new File(existingImagePath);
                 if (existingImageFile.exists()) {
@@ -185,8 +192,11 @@ public class ItemService {
             // 2. 새 이미지 저장
             String today = LocalDate.now().toString();
 
-            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
-            String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 이전에는 프로젝트 루트 + src/main/resources/static/images + 날짜 폴더였음 (JAR 환경에선 존재하지 않음)
+            // String projectRoot = System.getProperty("user.dir");
+            // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // → 외부 경로로 변경 (EC2 실제 경로)
+            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
