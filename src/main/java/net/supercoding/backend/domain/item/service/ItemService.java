@@ -44,7 +44,7 @@ public class ItemService {
             String today = LocalDate.now().toString();
 
             String projectRoot = System.getProperty("user.dir");
-            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+            String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -66,7 +66,7 @@ public class ItemService {
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = "/" + today + "/" + savedFileName;
+            String imageUrl = "/images/" + today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }
 
@@ -119,6 +119,16 @@ public class ItemService {
     ) {
         ItemEntity itemEntity = itemRepository.findById(itemPk)
                 .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
+
+        if (itemEntity.getItemImageUrl() != null && !itemEntity.getItemImageUrl().isEmpty()) {
+            String projectRoot = System.getProperty("user.dir");
+            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
+
+            File existingImageFile = new File(existingImagePath);
+            if (existingImageFile.exists()) {
+                existingImageFile.delete(); // 삭제
+            }
+        }
 
         itemRepository.delete(itemEntity);
         return "아이템 [" + itemPk + "] 삭제 완료되었습니다.";
@@ -197,7 +207,6 @@ public class ItemService {
                     .toFile(saveFile);
 
             String imageUrl = "/images/" + today + "/" + savedFileName;
-
             itemEntity.setItemImageUrl(imageUrl);
         }
 
