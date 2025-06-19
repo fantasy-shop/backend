@@ -7,3 +7,4 @@ public class CartItemQuantityUpdateRequestDto {
     private Long cartItemId;
     private int quantity;
 }
+

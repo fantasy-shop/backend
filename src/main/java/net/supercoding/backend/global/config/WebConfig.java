@@ -1,20 +1,25 @@
 package net.supercoding.backend.global.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // URL 패턴 /uploads/** 가 실제 파일 저장 위치 ./uploads/** 로 매핑됨
+        // /uploads/** → 로컬 디렉토리 uploads/ (파일 시스템 기반)
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
-        // "file:" 접두어는 파일 시스템 경로임을 나타냅니다.
+
+        // /images/** → classpath의 static/images/ 디렉토리 (정적 리소스 캐싱)
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("classpath:/static/images/")
+                .setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic().immutable());
     }
-
-
 }
+
