@@ -51,11 +51,11 @@ public class CartService {
     @Transactional
     public void updateQuantities(User user, List<CartItemQuantityUpdateRequestDto> updates) {
         for (CartItemQuantityUpdateRequestDto update : updates) {
-            CartItem cartItem = cartItemRepository.findById(update.getCartItemId())
-                    .orElseThrow(() -> new RuntimeException("장바구니 아이템을 찾을 수 없습니다: " + update.getCartItemId()));
+            CartItem cartItem = cartItemRepository.findById(update.getCartPk())
+                    .orElseThrow(() -> new RuntimeException("장바구니 아이템을 찾을 수 없습니다: " + update.getCartPk()));
 
             if (!cartItem.getUser().getUserPk().equals(user.getUserPk())) {
-                throw new RuntimeException("권한이 없습니다: " + update.getCartItemId());
+                throw new RuntimeException("권한이 없습니다: " + update.getCartPk());
             }
 
             if (update.getQuantity() <= 0) {

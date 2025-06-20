@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class CartItemQuantityUpdateRequestDto {
-    private Long cartItemId;
+    private Long cartPk;
     private int quantity;
 }
 
