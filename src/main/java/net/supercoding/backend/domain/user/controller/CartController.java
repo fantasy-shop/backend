@@ -50,5 +50,15 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{cartItemId}")
+    public ResponseEntity<Void> deleteCartItem(
+            @PathVariable Long cartItemId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        cartService.deleteCartItem(userDetails.getUser(), cartItemId);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
+
+
 
 }

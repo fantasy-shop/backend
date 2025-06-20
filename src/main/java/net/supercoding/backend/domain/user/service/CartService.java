@@ -63,6 +63,17 @@ public class CartService {
         }
     }
 
+    @Transactional
+    public void deleteCartItem(User user, Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("장바구니 항목을 찾을 수 없습니다."));
+
+        if (!cartItem.getUser().getUserPk().equals(user.getUserPk())) {
+            throw new RuntimeException("해당 장바구니 항목에 대한 권한이 없습니다.");
+        }
+
+        cartItemRepository.delete(cartItem);
+    }
 
 
 }
