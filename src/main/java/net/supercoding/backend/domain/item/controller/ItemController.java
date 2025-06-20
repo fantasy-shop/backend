@@ -30,7 +30,7 @@ public class ItemController {
     private final CartItemRepository cartItemRepository;
 
     @PostMapping("")
-    public ItemCreateUpdateResponse itemCreate(
+    public ItemDetailResponse itemCreate(
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
             @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
     ) throws IOException {
@@ -62,7 +62,7 @@ public class ItemController {
     }
 
     @PutMapping("/{itemPk}")
-    public ItemCreateUpdateResponse itemUpdate(
+    public ItemDetailResponse itemUpdate(
             @PathVariable("itemPk") Long itemPk,
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
             @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
