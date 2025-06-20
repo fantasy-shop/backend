@@ -6,11 +6,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateRequest;
-import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemDetailResponse;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemListResponse;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 @RequiredArgsConstructor
@@ -32,27 +30,30 @@ public class ItemService {
      *  아이템 등록
      */
     @Transactional
-    public ItemCreateUpdateResponse itemCreate(
+    public ItemDetailResponse itemCreate(
             ItemCreateUpdateRequest itemCreateUpdateRequest,
-            MultipartFile image
+            MultipartFile itemImage
     ) throws IOException {
 
         ItemEntity newItemEntity = ItemCreateUpdateRequest.toEntity(itemCreateUpdateRequest);
 
         // 이미지 저장 코드
-        if (image != null && !image.isEmpty()) {
+        if (itemImage != null && !itemImage.isEmpty()) {
             String today = LocalDate.now().toString();
 
-            String projectRoot = System.getProperty("user.dir");
-            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+            // 기존 (JAR 환경에서 경로 문제 있음)
+            // String projectRoot = System.getProperty("user.dir");
+            // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 변경 (EC2 등 실제 저장 경로로 지정)
+            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
             // 파일 이름 및 확장자 바꾸기
-
             // 파일의 원래 이름에서 확장자 제거
-            String originalName = image.getOriginalFilename();
+            String originalName = itemImage.getOriginalFilename();
             String nameWithoutExtension = originalName != null && originalName.contains(".")
                     ? originalName.substring(0, originalName.lastIndexOf('.'))
                     : originalName;
@@ -61,19 +62,19 @@ public class ItemService {
             File saveFile = new File(uploadDir, savedFileName);
 
             // Thumbnailator 이미지 처리용 자바 라이브러리 사용
-            Thumbnails.of(image.getInputStream())
+            Thumbnails.of(itemImage.getInputStream())
                     .size(450, 450)         // 비율 유지하면서 둘 중 큰 쪽을 450px로 맞춤
                     .outputFormat("jpg")    // JPEG 형식 저장
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = "/" + today + "/" + savedFileName;
+            String imageUrl = "/images/" + today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }
 
         ItemEntity savedItemEntity = itemRepository.save(newItemEntity);
 
-        return ItemCreateUpdateResponse.fromEntity(savedItemEntity);
+        return ItemDetailResponse.fromEntity(savedItemEntity);
     }
 
     /**
@@ -121,6 +122,16 @@ public class ItemService {
         ItemEntity itemEntity = itemRepository.findById(itemPk)
                 .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
 
+        if (itemEntity.getItemImageUrl() != null && !itemEntity.getItemImageUrl().isEmpty()) {
+            String projectRoot = System.getProperty("user.dir");
+            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
+
+            File existingImageFile = new File(existingImagePath);
+            if (existingImageFile.exists()) {
+                existingImageFile.delete(); // 삭제
+            }
+        }
+
         itemRepository.delete(itemEntity);
         return "아이템 [" + itemPk + "] 삭제 완료되었습니다.";
     }
@@ -142,10 +153,10 @@ public class ItemService {
      *  아이템 수정
      */
     @Transactional
-    public ItemCreateUpdateResponse itemUpdate(
+    public ItemDetailResponse itemUpdate(
             Long itemPk,
             ItemCreateUpdateRequest itemCreateUpdateRequest,
-            MultipartFile image
+            MultipartFile itemImage
     ) throws IOException {
 
         ItemEntity itemEntity = itemRepository.findById(itemPk)
@@ -159,14 +170,16 @@ public class ItemService {
         itemEntity.setItemCategory(itemCreateUpdateRequest.getItemCategory());
 
         // 이미지 수정 코드
-        if (image != null && !image.isEmpty()) {
-            String today = LocalDate.now().toString();
+        if (itemImage != null && !itemImage.isEmpty()) {
 
             // 1. 기존 이미지 삭제
             String existingImageUrl = itemEntity.getItemImageUrl(); // 예: "/2025-06-12/abc_image.png"
             if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-                String projectRoot = System.getProperty("user.dir");
-                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 이전에는 프로젝트 루트 + /src/main/resources/static + 이미지 경로를 사용했음 (JAR 환경에서는 경로가 없음)
+                // String projectRoot = System.getProperty("user.dir");
+                // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // → EC2 등에서 동작하게 하려면 실제 저장 위치를 지정해야 함
+                String existingImagePath = "/home/ec2-user/images" + existingImageUrl; // 변경된 부분
 
                 File existingImageFile = new File(existingImagePath);
                 if (existingImageFile.exists()) {
@@ -175,22 +188,37 @@ public class ItemService {
             }
 
             // 2. 새 이미지 저장
-            String projectRoot = System.getProperty("user.dir"); // 현재 프로젝트 루트
-            String staticPath = projectRoot + "/src/main/resources/static/" + today;
+            String today = LocalDate.now().toString();
+
+            // 이전에는 프로젝트 루트 + src/main/resources/static/images + 날짜 폴더였음 (JAR 환경에선 존재하지 않음)
+            // String projectRoot = System.getProperty("user.dir");
+            // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // → 외부 경로로 변경 (EC2 실제 경로)
+            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            File saveFile = new File(uploadDir, savedFileName);
-            image.transferTo(saveFile);
+            String originalName = itemImage.getOriginalFilename();
+            String nameWithoutExtension = originalName != null && originalName.contains(".")
+                    ? originalName.substring(0, originalName.lastIndexOf('.'))
+                    : originalName;
 
-            // 프론트에서 접근 가능한 URL 경로
-            String imageUrl = "/" + today + "/" + savedFileName;
+            String savedFileName = UUID.randomUUID() + "_" + nameWithoutExtension + ".jpg";
+            File saveFile = new File(uploadDir, savedFileName);
+
+
+            Thumbnails.of(itemImage.getInputStream())
+                    .size(450, 450)         // 비율 유지하면서 둘 중 큰 쪽을 450px로 맞춤
+                    .outputFormat("jpg")    // JPEG 형식 저장
+                    .outputQuality(0.85)    // 85% 품질 압축
+                    .toFile(saveFile);
+
+            String imageUrl = "/images/" + today + "/" + savedFileName;
             itemEntity.setItemImageUrl(imageUrl);
         }
 
-        return ItemCreateUpdateResponse.fromEntity(itemEntity);
+        return ItemDetailResponse.fromEntity(itemEntity);
 
     }
 

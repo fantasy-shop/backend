@@ -2,7 +2,6 @@ package net.supercoding.backend.domain.user.service;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.*;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
@@ -10,6 +9,8 @@ import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -83,15 +82,22 @@ public class UserService {
             // 기존 이미지 삭제
             String existingImageUrl = user.getProfileImageUrl();
             if (existingImageUrl != null && !existingImageUrl.isEmpty()) {
-                String projectRoot = System.getProperty("user.dir");
-                String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 기존 (JAR 환경에서 문제)
+                // String projectRoot = System.getProperty("user.dir");
+                // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
+                // 변경: EC2 등 실제 저장 경로로 지정
+                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
+
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
             }
 
             // 새 이미지 저장
-            String projectRoot = System.getProperty("user.dir");
-            String uploadDirPath = projectRoot + "/src/main/resources/static/" + today;
+            // String projectRoot = System.getProperty("user.dir");
+            // String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
+            // 변경: EC2 등 실제 저장 경로로 지정
+            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
+
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
@@ -99,7 +105,7 @@ public class UserService {
             File savedFile = new File(uploadDir, savedFileName);
             image.transferTo(savedFile);
 
-            String imageUrl = "/" + today + "/" + savedFileName;  // 상대경로
+            String imageUrl = "/images/" + today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 
@@ -129,6 +135,21 @@ public class UserService {
     public void deleteUserById(Long userId) {
         // 사용자 존재 여부 확인 및 예외 처리 가능
         userRepository.deleteById(userId);
+    }
+
+    // 비밀번호 변경
+    public boolean changePassword(UserDetails userDetails, String currentPassword, String newPassword) {
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            return false;
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return true;
     }
 
 }

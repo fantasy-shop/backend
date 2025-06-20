@@ -4,23 +4,26 @@ package net.supercoding.backend.domain.user.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.LoginRequestDto;
-import net.supercoding.backend.domain.user.dto.SignupRequestDto;
-import net.supercoding.backend.domain.user.dto.UserAuthResponseDto;
+import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.login.PasswordChangeRequest;
+import net.supercoding.backend.domain.user.dto.profile.UserAuthResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.security.jwt.JwtTokenProvider;
-
 import net.supercoding.backend.domain.user.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -103,6 +106,21 @@ public class UserController {
             }
         }
         return ResponseEntity.ok().build();
+    }
+
+    // 비밀번호 변경 api
+    @PostMapping("/password")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest request, Principal principal) {
+        UserDetails userDetails = (UserDetails) ((Authentication) principal).getPrincipal();
+
+        boolean success = userService.changePassword(userDetails, request.getCurrentPassword(), request.getNewPassword());
+
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "현재 비밀번호가 일치하지 않습니다."));
+        }
     }
 }
 

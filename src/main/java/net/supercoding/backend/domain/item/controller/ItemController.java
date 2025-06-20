@@ -30,11 +30,11 @@ public class ItemController {
     private final CartItemRepository cartItemRepository;
 
     @PostMapping("")
-    public ItemCreateUpdateResponse itemCreate(
+    public ItemDetailResponse itemCreate(
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
     ) throws IOException {
-        return itemService.itemCreate(itemCreateUpdateRequest, image);
+        return itemService.itemCreate(itemCreateUpdateRequest, itemImage);
     }
 
     @GetMapping("")
@@ -62,11 +62,11 @@ public class ItemController {
     }
 
     @PutMapping("/{itemPk}")
-    public ItemCreateUpdateResponse itemUpdate(
+    public ItemDetailResponse itemUpdate(
             @PathVariable("itemPk") Long itemPk,
             @ModelAttribute ItemCreateUpdateRequest itemCreateUpdateRequest,
-            @RequestPart(value = "image", required = false) MultipartFile image
+            @RequestPart(value = "itemImage", required = false) MultipartFile itemImage
     ) throws IOException {
-        return itemService.itemUpdate(itemPk, itemCreateUpdateRequest, image);
+        return itemService.itemUpdate(itemPk, itemCreateUpdateRequest, itemImage);
     }
 }
