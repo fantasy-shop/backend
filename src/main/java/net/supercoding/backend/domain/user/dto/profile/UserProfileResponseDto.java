@@ -13,6 +13,7 @@ public class UserProfileResponseDto {
     private Long userPk;
     private String userName;
     private String email;
+    private String address;
     private String phoneNumber;
     private String profileImageUrl;
     private LocalDateTime createAt;
@@ -25,6 +26,7 @@ public class UserProfileResponseDto {
                 .userPk(user.getUserPk())
                 .userName(user.getUserName())
                 .email(user.getEmail())
+                .address(user.getAddress())
                 .phoneNumber(user.getPhoneNumber())
                 .profileImageUrl(user.getProfileImageUrl())
                 .createAt(user.getCreateAt())
