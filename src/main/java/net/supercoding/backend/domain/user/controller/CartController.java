@@ -1,10 +1,7 @@
 package net.supercoding.backend.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.supercoding.backend.domain.user.dto.cart.AddToCartRequestDto;
-import net.supercoding.backend.domain.user.dto.cart.AddToCartResponseDto;
-import net.supercoding.backend.domain.user.dto.cart.CartItemResponseDto;
-import net.supercoding.backend.domain.user.dto.cart.CartItemsQuantityUpdateRequestDto;
+import net.supercoding.backend.domain.user.dto.cart.*;
 import net.supercoding.backend.domain.user.security.CustomUserDetails;
 import net.supercoding.backend.domain.user.service.CartService;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +47,22 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{cartItemId}")
+    @DeleteMapping("/{cartPk}")
     public ResponseEntity<Void> deleteCartItem(
-            @PathVariable Long cartItemId,
+            @PathVariable Long cartPk,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        cartService.deleteCartItem(userDetails.getUser(), cartItemId);
+        cartService.deleteCartItem(userDetails.getUser(), cartPk);
         return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
+
+    @PostMapping("/sync")
+    public ResponseEntity<List<CartItemResponseDto>> syncCartItems(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody CartSyncRequestDto requestDto) {
+
+        List<CartItemResponseDto> updatedCart = cartService.syncCartItems(userDetails.getUser(), requestDto.getItems());
+        return ResponseEntity.ok(updatedCart);
     }
 
 
