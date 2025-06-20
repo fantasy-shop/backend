@@ -39,24 +39,6 @@ public class ItemDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ItemCreateUpdateResponse {
-
-        private Long itemPk;
-
-        public static ItemCreateUpdateResponse fromEntity(
-                ItemEntity itemEntity
-        ) {
-            return ItemCreateUpdateResponse.builder()
-                    .itemPk(itemEntity.getItemPk())
-                    .build();
-        }
-    }
-
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ItemListResponse{
 
         private Long itemPk;
