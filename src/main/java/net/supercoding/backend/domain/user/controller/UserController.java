@@ -5,6 +5,7 @@ package net.supercoding.backend.domain.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.login.LoginResponseDto;
 import net.supercoding.backend.domain.user.dto.login.PasswordChangeRequest;
 import net.supercoding.backend.domain.user.dto.profile.UserAuthResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
@@ -48,8 +49,10 @@ public class UserController {
         User user = userService.authenticate(dto); // email, password 검증
         String token = jwtTokenProvider.createToken(user.getEmail());
 
-        return ResponseEntity.ok().body(Map.of("token", token));
+        LoginResponseDto responseDto = LoginResponseDto.of(user, token);
+        return ResponseEntity.ok().body(responseDto);
     }
+
 
     // 내 프로필 조회
     @GetMapping("/me")
