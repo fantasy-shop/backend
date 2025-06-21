@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String > redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             // 토큰이 redis에 저장되어 있는지 확인
-            if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
+            if (Boolean.TRUE.equals(redisTemplate.hasKey("blacklist:" + token))) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("This token is blacklisted.");
                 return;
