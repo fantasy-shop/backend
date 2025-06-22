@@ -86,7 +86,8 @@ public class UserService {
                 // String projectRoot = System.getProperty("user.dir");
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // 변경: EC2 등 실제 저장 경로로 지정
-                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
+//                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
+                String existingImagePath = "/home/ubuntu/images" + existingImageUrl;
 
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
@@ -96,7 +97,8 @@ public class UserService {
             // String projectRoot = System.getProperty("user.dir");
             // String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
             // 변경: EC2 등 실제 저장 경로로 지정
-            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
+//            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
+            String uploadDirPath = "/home/ubuntu/images/" + today; // 변경된 부분
 
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
