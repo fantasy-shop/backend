@@ -107,7 +107,7 @@ public class UserService {
             File savedFile = new File(uploadDir, savedFileName);
             image.transferTo(savedFile);
 
-            String imageUrl = "/images/" + today + "/" + savedFileName;  // 상대경로
+            String imageUrl = "images/" + today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 
