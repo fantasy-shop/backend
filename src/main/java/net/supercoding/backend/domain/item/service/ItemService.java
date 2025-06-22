@@ -70,7 +70,7 @@ public class ItemService {
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = "/images/" + today + "/" + savedFileName;
+            String imageUrl = "images/" + today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }
 
@@ -220,7 +220,7 @@ public class ItemService {
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = "/images/" + today + "/" + savedFileName;
+            String imageUrl = "images/" + today + "/" + savedFileName;
             itemEntity.setItemImageUrl(imageUrl);
         }
 
