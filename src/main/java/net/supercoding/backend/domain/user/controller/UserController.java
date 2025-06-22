@@ -4,7 +4,9 @@ package net.supercoding.backend.domain.user.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
+import net.supercoding.backend.domain.user.dto.login.LoginResponseDto;
 import net.supercoding.backend.domain.user.dto.login.PasswordChangeRequest;
 import net.supercoding.backend.domain.user.dto.profile.UserAuthResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
@@ -27,6 +29,7 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -34,7 +37,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequestDto dto) {
@@ -48,8 +51,10 @@ public class UserController {
         User user = userService.authenticate(dto); // email, password 검증
         String token = jwtTokenProvider.createToken(user.getEmail());
 
-        return ResponseEntity.ok().body(Map.of("token", token));
+        LoginResponseDto responseDto = LoginResponseDto.of(user, token);
+        return ResponseEntity.ok().body(responseDto);
     }
+
 
     // 내 프로필 조회
     @GetMapping("/me")
@@ -85,14 +90,30 @@ public class UserController {
 
     // 회원탈퇴 API
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdrawUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<Void> withdrawUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
         if (userDetails == null) {
-            return ResponseEntity.status(401).build(); // 인증 정보 없으면 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        userService.deleteUserById(userDetails.getUser().getUserPk());
-        return ResponseEntity.noContent().build(); // 204 No Content
+        try {
+            // 1. 사용자 삭제
+            userService.deleteUserById(userDetails.getUser().getUserPk());
+
+            // 2. JWT 블랙리스트 등록
+            String token = authorizationHeader.replace("Bearer ", "");
+            long expiration = jwtTokenProvider.getExpiration(token); // JWT 남은 만료 시간(ms)
+            redisTemplate.opsForValue().set("blacklist:" + token, "logout", expiration, TimeUnit.MILLISECONDS);
+
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("회원탈퇴 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     // 로그아웃 api
     @PostMapping("/logout")
@@ -102,7 +123,7 @@ public class UserController {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             long expiration = jwtTokenProvider.getExpiration(token);
             if (expiration > 0) {
-                redisTemplate.opsForValue().set(token, "logout", expiration, TimeUnit.MILLISECONDS);
+                redisTemplate.opsForValue().set("blacklist:" + token, "logout", expiration, TimeUnit.MILLISECONDS);
             }
         }
         return ResponseEntity.ok().build();

@@ -1,6 +1,7 @@
 package net.supercoding.backend.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class CartItem {
 
     private LocalDateTime addedAt;
 
+    @Builder
     public CartItem(User user, ItemEntity item, int quantity) {
         this.user = user;
         this.item = item;

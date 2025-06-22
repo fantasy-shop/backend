@@ -12,6 +12,7 @@ public class UserAuthResponseDto {
     private String email;
     private String userName;
     private String phoneNumber;
+    private String address;
     private String profileImageUrl;
     private LocalDateTime createAt;
     private String userStatus;
@@ -22,6 +23,7 @@ public class UserAuthResponseDto {
         this.userPk = user.getUserPk();
         this.email = user.getEmail();
         this.userName = user.getUserName();
+        this.address = user.getAddress();
         this.phoneNumber = user.getPhoneNumber();
         this.profileImageUrl = user.getProfileImageUrl();
         this.createAt = user.getCreateAt();

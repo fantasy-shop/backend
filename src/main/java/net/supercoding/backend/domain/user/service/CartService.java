@@ -3,6 +3,7 @@ package net.supercoding.backend.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import net.supercoding.backend.domain.item.entity.ItemEntity;
 import net.supercoding.backend.domain.item.repository.ItemRepository;
+import net.supercoding.backend.domain.user.dto.cart.AddToCartRequestDto;
 import net.supercoding.backend.domain.user.dto.cart.AddToCartResponseDto;
 import net.supercoding.backend.domain.user.dto.cart.CartItemQuantityUpdateRequestDto;
 import net.supercoding.backend.domain.user.dto.cart.CartItemResponseDto;
@@ -12,7 +13,9 @@ import net.supercoding.backend.domain.user.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,11 +51,11 @@ public class CartService {
     @Transactional
     public void updateQuantities(User user, List<CartItemQuantityUpdateRequestDto> updates) {
         for (CartItemQuantityUpdateRequestDto update : updates) {
-            CartItem cartItem = cartItemRepository.findById(update.getCartItemId())
-                    .orElseThrow(() -> new RuntimeException("장바구니 아이템을 찾을 수 없습니다: " + update.getCartItemId()));
+            CartItem cartItem = cartItemRepository.findById(update.getCartPk())
+                    .orElseThrow(() -> new RuntimeException("장바구니 아이템을 찾을 수 없습니다: " + update.getCartPk()));
 
             if (!cartItem.getUser().getUserPk().equals(user.getUserPk())) {
-                throw new RuntimeException("권한이 없습니다: " + update.getCartItemId());
+                throw new RuntimeException("권한이 없습니다: " + update.getCartPk());
             }
 
             if (update.getQuantity() <= 0) {
@@ -62,6 +65,46 @@ public class CartService {
             }
         }
     }
+
+    @Transactional
+    public void deleteCartItem(User user, Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("장바구니 항목을 찾을 수 없습니다."));
+
+        if (!cartItem.getUser().getUserPk().equals(user.getUserPk())) {
+            throw new RuntimeException("해당 장바구니 항목에 대한 권한이 없습니다.");
+        }
+
+        cartItemRepository.delete(cartItem);
+    }
+
+    @Transactional
+    public List<CartItemResponseDto> syncCartItems(User user, List<AddToCartRequestDto> items) {
+        for (AddToCartRequestDto itemDto : items) {
+            ItemEntity item = itemRepository.findById(itemDto.getItemPk())
+                    .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+
+            Optional<CartItem> optionalCartItem = cartItemRepository.findByUserAndItem(user, item);
+
+            if (optionalCartItem.isPresent()) {
+                CartItem existingCartItem = optionalCartItem.get();
+                existingCartItem.setQuantity(existingCartItem.getQuantity() + itemDto.getQuantity());
+            } else {
+                CartItem newCartItem = new CartItem(user, item, itemDto.getQuantity());
+                newCartItem.setAddedAt(LocalDateTime.now());
+                cartItemRepository.save(newCartItem);
+            }
+        }
+
+        List<CartItem> updatedCartItems = cartItemRepository.findByUser(user);
+
+        // from() 메서드 활용해서 DTO 리스트 생성
+        return updatedCartItems.stream()
+                .map(CartItemResponseDto::from)
+                .toList();
+    }
+
+
 
 
 
