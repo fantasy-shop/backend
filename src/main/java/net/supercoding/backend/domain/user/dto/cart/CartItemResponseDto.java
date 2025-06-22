@@ -14,6 +14,7 @@ public class CartItemResponseDto {
     private String itemName;
     private int quantity;
     private Long itemPrice;
+    private String itemImageUrl;
     private LocalDateTime addedAt;
 
     public static CartItemResponseDto from(CartItem cartItem) {
@@ -23,6 +24,7 @@ public class CartItemResponseDto {
                 .itemName(cartItem.getItem().getItemName())
                 .quantity(cartItem.getQuantity())
                 .itemPrice(cartItem.getItem().getItemPrice())
+                .itemImageUrl(cartItem.getItem().getItemImageUrl())
                 .addedAt(cartItem.getAddedAt())
                 .build();
     }

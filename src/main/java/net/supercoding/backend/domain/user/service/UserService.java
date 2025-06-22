@@ -2,6 +2,7 @@ package net.supercoding.backend.domain.user.service;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import net.supercoding.backend.domain.user.dto.login.LoginRequestDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
@@ -87,7 +88,7 @@ public class UserService {
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // 변경: EC2 등 실제 저장 경로로 지정
 //                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
-                String existingImagePath = "/home/ubuntu/images" + existingImageUrl;
+                String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images" + existingImageUrl;
 
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
@@ -98,16 +99,23 @@ public class UserService {
             // String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
             // 변경: EC2 등 실제 저장 경로로 지정
 //            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
-            String uploadDirPath = "/home/ubuntu/images/" + today; // 변경된 부분
+            String uploadDirPath = "/home/ubuntu/www/fantasyshop/assets/images/" + today; // 변경된 부분
 
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
             String savedFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             File savedFile = new File(uploadDir, savedFileName);
-            image.transferTo(savedFile);
+            // 기존방식저장
+//            image.transferTo(savedFile);
+            // 변경 방식 (리사이징 + 용량 줄이기)
+            Thumbnails.of(image.getInputStream())
+//                    .size(600, 600)          // 최대 크기 제한 (가로/세로 비율 유지됨)
+                    .outputQuality(0.8f)     // 압축 품질 (0.0 ~ 1.0), 낮을수록 용량 감소
+                    .toFile(savedFile);
 
-            String imageUrl = "images/" + today + "/" + savedFileName;  // 상대경로
+
+            String imageUrl = today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 

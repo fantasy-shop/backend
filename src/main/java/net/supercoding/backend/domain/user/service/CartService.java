@@ -105,6 +105,10 @@ public class CartService {
     }
 
 
+    @Transactional
+    public void clearCart(User user) {
+        cartItemRepository.deleteByUser(user); // 또는 deleteAllByUser(user)
+    }
 
 
 
