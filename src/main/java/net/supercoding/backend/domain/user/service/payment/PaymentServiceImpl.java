@@ -11,6 +11,7 @@ import net.supercoding.backend.domain.user.entity.PaymentItem;
 import net.supercoding.backend.domain.user.entity.User;
 import net.supercoding.backend.domain.user.repository.PaymentItemRepository;
 import net.supercoding.backend.domain.user.repository.PaymentRepository;
+import net.supercoding.backend.domain.user.service.CartService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentItemRepository paymentItemRepository;
     private final ItemRepository itemRepository;
+    private final CartService cartService;
 
     @Override
     public PaymentResponseDto createPayment(User user, List<CreatePaymentRequestDto.PaymentItemRequestDto> items) {
@@ -74,7 +76,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setItems(paymentItems);
 
-        // 5. DTO 변환 및 반환
+        // 5. 장바구니 비우기
+        cartService.clearCart(user);
+
+        // 6. DTO 변환 및 반환
         return toPaymentResponseDto(payment);
     }
 
