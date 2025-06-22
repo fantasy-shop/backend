@@ -110,7 +110,7 @@ public class UserService {
 //            image.transferTo(savedFile);
             // 변경 방식 (리사이징 + 용량 줄이기)
             Thumbnails.of(image.getInputStream())
-//                    .size(600, 600)          // 최대 크기 제한 (가로/세로 비율 유지됨)
+                    .size(600, 600)          // 최대 크기 제한 (가로/세로 비율 유지됨)
                     .outputQuality(0.8f)     // 압축 품질 (0.0 ~ 1.0), 낮을수록 용량 감소
                     .toFile(savedFile);
 
