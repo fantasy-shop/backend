@@ -1,12 +1,5 @@
 package net.supercoding.backend.domain.item.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.supercoding.backend.domain.item.dto.ItemDto.ItemCreateUpdateRequest;
@@ -19,6 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,8 @@ public class ItemService {
             // String projectRoot = System.getProperty("user.dir");
             // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
             // 변경 (EC2 등 실제 저장 경로로 지정)
-            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+//            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+            String staticPath = "/home/ubuntu/images/" + today; // 변경된 부분
 
 
             File uploadDir = new File(staticPath);
@@ -123,8 +125,10 @@ public class ItemService {
                 .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."));
 
         if (itemEntity.getItemImageUrl() != null && !itemEntity.getItemImageUrl().isEmpty()) {
-            String projectRoot = System.getProperty("user.dir");
-            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
+//            String projectRoot = System.getProperty("user.dir");
+//            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
+//            String existingImagePath = "/home/ec2-user/images" + itemEntity.getItemImageUrl(); // 테스트서버
+            String existingImagePath = "/home/ubuntu/images" + itemEntity.getItemImageUrl();
 
             File existingImageFile = new File(existingImagePath);
             if (existingImageFile.exists()) {
@@ -179,7 +183,8 @@ public class ItemService {
                 // String projectRoot = System.getProperty("user.dir");
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // → EC2 등에서 동작하게 하려면 실제 저장 위치를 지정해야 함
-                String existingImagePath = "/home/ec2-user/images" + existingImageUrl; // 변경된 부분
+//                String existingImagePath = "/home/ec2-user/images" + existingImageUrl; // 변경된 부분
+                String existingImagePath = "/home/ubuntu/images" + existingImageUrl; // 변경된 부분
 
                 File existingImageFile = new File(existingImagePath);
                 if (existingImageFile.exists()) {
@@ -194,7 +199,8 @@ public class ItemService {
             // String projectRoot = System.getProperty("user.dir");
             // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
             // → 외부 경로로 변경 (EC2 실제 경로)
-            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+//            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
+            String staticPath = "/home/ubuntu/images/" + today; // 변경된 부분
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
