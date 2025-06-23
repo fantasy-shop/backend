@@ -70,7 +70,8 @@ public class ItemService {
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = today + "/" + savedFileName;
+//            String imageUrl = "/images/" + today + "/" + savedFileName;
+            String imageUrl = "" + today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }
 
@@ -128,7 +129,7 @@ public class ItemService {
 //            String projectRoot = System.getProperty("user.dir");
 //            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
 //            String existingImagePath = "/home/ec2-user/images" + itemEntity.getItemImageUrl(); // 테스트서버
-            String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images" + itemEntity.getItemImageUrl();
+            String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images/" + itemEntity.getItemImageUrl();
 
             File existingImageFile = new File(existingImagePath);
             if (existingImageFile.exists()) {
@@ -220,7 +221,8 @@ public class ItemService {
                     .outputQuality(0.85)    // 85% 품질 압축
                     .toFile(saveFile);
 
-            String imageUrl = today + "/" + savedFileName;
+//            String imageUrl =  "/images/" + today + "/" + savedFileName;
+            String imageUrl =  "" + today + "/" + savedFileName;
             itemEntity.setItemImageUrl(imageUrl);
         }
 

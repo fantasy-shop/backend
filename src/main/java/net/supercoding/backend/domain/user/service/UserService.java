@@ -88,7 +88,7 @@ public class UserService {
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // 변경: EC2 등 실제 저장 경로로 지정
 //                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
-                String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images" + existingImageUrl;
+                String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images/" + existingImageUrl;
 
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
@@ -115,7 +115,8 @@ public class UserService {
                     .toFile(savedFile);
 
 
-            String imageUrl = today + "/" + savedFileName;  // 상대경로
+//            String imageUrl = "/images/" + today + "/" + savedFileName;  // 상대경로
+            String imageUrl = "" + today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 
