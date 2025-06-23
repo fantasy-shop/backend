@@ -15,7 +15,7 @@
 
 ## 📦 배포
 
-> [yonghun16.duckdns.org/fantasyshop](yonghun16.duckdns.org/fantasyshop)
+> [yonghun16.duckdns.org/fantasyshop](https://yonghun16.duckdns.org/fantasyshop)
 
 테스트 계정
 
