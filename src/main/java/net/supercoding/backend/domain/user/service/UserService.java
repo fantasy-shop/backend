@@ -26,6 +26,8 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final String IMAGE_BASE_PATH = "/home/ubuntu/www/fantasyshop/assets/images/";
+
 //    private final ImageUploader imageUploader;
 
     @Transactional
@@ -88,7 +90,7 @@ public class UserService {
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // 변경: EC2 등 실제 저장 경로로 지정
 //                String existingImagePath = "/home/ec2-user/images" + existingImageUrl;
-                String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images/" + existingImageUrl;
+                String existingImagePath = IMAGE_BASE_PATH + existingImageUrl;
 
                 File existingFile = new File(existingImagePath);
                 if (existingFile.exists()) existingFile.delete();
@@ -99,7 +101,7 @@ public class UserService {
             // String uploadDirPath = projectRoot + "/src/main/resources/static/images/" + today;
             // 변경: EC2 등 실제 저장 경로로 지정
 //            String uploadDirPath = "/home/ec2-user/images/" + today; // 변경된 부분
-            String uploadDirPath = "/home/ubuntu/www/fantasyshop/assets/images/" + today; // 변경된 부분
+            String uploadDirPath = IMAGE_BASE_PATH + today; // 변경된 부분
 
             File uploadDir = new File(uploadDirPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -116,7 +118,7 @@ public class UserService {
 
 
 //            String imageUrl = "/images/" + today + "/" + savedFileName;  // 상대경로
-            String imageUrl = "" + today + "/" + savedFileName;  // 상대경로
+            String imageUrl = today + "/" + savedFileName;  // 상대경로
             user.setProfileImageUrl(imageUrl);
         }
 

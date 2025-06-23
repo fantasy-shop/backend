@@ -26,6 +26,7 @@ import java.util.UUID;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final String IMAGE_BASE_PATH = "/home/ubuntu/www/fantasyshop/assets/images/";
 
     /**
      *  아이템 등록
@@ -47,7 +48,7 @@ public class ItemService {
             // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
             // 변경 (EC2 등 실제 저장 경로로 지정)
 //            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
-            String staticPath = "/home/ubuntu/www/fantasyshop/assets/images/" + today; // 변경된 부분
+            String staticPath = IMAGE_BASE_PATH + today; // 변경된 부분
 
 
             File uploadDir = new File(staticPath);
@@ -71,7 +72,7 @@ public class ItemService {
                     .toFile(saveFile);
 
 //            String imageUrl = "/images/" + today + "/" + savedFileName;
-            String imageUrl = "" + today + "/" + savedFileName;
+            String imageUrl = today + "/" + savedFileName;
             newItemEntity.setItemImageUrl(imageUrl);
         }
 
@@ -129,7 +130,7 @@ public class ItemService {
 //            String projectRoot = System.getProperty("user.dir");
 //            String existingImagePath = projectRoot + "/src/main/resources/static" + itemEntity.getItemImageUrl();
 //            String existingImagePath = "/home/ec2-user/images" + itemEntity.getItemImageUrl(); // 테스트서버
-            String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images/" + itemEntity.getItemImageUrl();
+            String existingImagePath = IMAGE_BASE_PATH + itemEntity.getItemImageUrl();
 
             File existingImageFile = new File(existingImagePath);
             if (existingImageFile.exists()) {
@@ -185,7 +186,7 @@ public class ItemService {
                 // String existingImagePath = projectRoot + "/src/main/resources/static" + existingImageUrl;
                 // → EC2 등에서 동작하게 하려면 실제 저장 위치를 지정해야 함
 //                String existingImagePath = "/home/ec2-user/images" + existingImageUrl; // 변경된 부분
-                String existingImagePath = "/home/ubuntu/www/fantasyshop/assets/images" + existingImageUrl; // 변경된 부분
+                String existingImagePath = IMAGE_BASE_PATH + existingImageUrl; // 변경된 부분
 
                 File existingImageFile = new File(existingImagePath);
                 if (existingImageFile.exists()) {
@@ -201,7 +202,7 @@ public class ItemService {
             // String staticPath = projectRoot + "/src/main/resources/static/images/" + today;
             // → 외부 경로로 변경 (EC2 실제 경로)
 //            String staticPath = "/home/ec2-user/images/" + today; // 변경된 부분
-            String staticPath = "/home/ubuntu/www/fantasyshop/assets/images/" + today; // 변경된 부분
+            String staticPath = IMAGE_BASE_PATH + today; // 변경된 부분
 
             File uploadDir = new File(staticPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -222,7 +223,7 @@ public class ItemService {
                     .toFile(saveFile);
 
 //            String imageUrl =  "/images/" + today + "/" + savedFileName;
-            String imageUrl =  "" + today + "/" + savedFileName;
+            String imageUrl =  today + "/" + savedFileName;
             itemEntity.setItemImageUrl(imageUrl);
         }
 
