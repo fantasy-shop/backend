@@ -1,5 +1,6 @@
 package net.supercoding.backend.domain.user.service;
 
+import com.google.api.client.util.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,7 +14,8 @@ import java.util.Map;
 @Service
 public class GeminiProService {
 
-    private final String API_KEY = "AIzaSyBLZkY-MYIKIhuJtAe33IngZPGenL22evY"; // 👉 실제 발급받은 키로 교체
+    @Value("${google.api.key}")
+    private String API_KEY; // 실제 발급받은 키로 교체
     private final String ENDPOINT = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
 
