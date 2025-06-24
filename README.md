@@ -70,7 +70,7 @@
       <td rowspan="2" style="vertical-align: top; min-width: 50px;">
         <img src="https://github.com/fantasy-shop/.github/blob/main/profile/project_info/pic3.png?raw=true" alt="이정관" style="min-width: 50px; width:60px; height: 60px;" />
       </td>
-      <td><a href="https://github.com/ines2131/">이정관</a> (FE)</td>
+      <td><a href="https://github.com/LEEJUNGKWAN1">이정관</a> (FE)</td>
     </tr>
       <tr>
         <td colspan="2">상품 목록, 상품 자세히 보기 페이지 및 백엔드 통신 로직</td>
@@ -82,7 +82,7 @@
       <td rowspan="2" style="vertical-align: top; min-width: 50px;">
         <img src="https://github.com/fantasy-shop/.github/blob/main/profile/project_info/pic5.png?raw=true" alt="이세준" style="min-width: 50px; width:60px; height: 60px;" />
       </td>
-      <td><a href="https://github.com/ines2131/">이세준</a> (BE)</td>
+      <td><a href="https://github.com/hello22433/">이세준</a> (BE)</td>
     </tr>
       <tr>
         <td colspan="2">회원가입, 로그인, 장바구니 등 유저 관련 백엔드 로직, 유저 DB 구조 설계, 서버 인프라, AI 고객센터</td>
