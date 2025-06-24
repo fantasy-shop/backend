@@ -85,7 +85,7 @@
       <td><a href="https://github.com/hello22433/">이세준</a> (BE)</td>
     </tr>
       <tr>
-        <td colspan="2">회원가입, 로그인, 장바구니 등 유저 관련 백엔드 로직, 유저 DB 구조 설계, 서버 인프라, AI 고객센터</td>
+        <td colspan="2">회원가입, 로그인, 장바구니 등 유저 관련 백엔드 로직, 유저 DB 구조 설계, 서버 인프라, AI 도우미</td>
       </tr>
     </tr>
   </tbody>
@@ -120,10 +120,12 @@
 ![장바구니](https://github.com/fantasy-shop/.github/blob/main/profile/project_info/cart.gif?raw=true)
 ### ✏️ 상품 등록 & 수정 & 삭제 
 ![상품](https://github.com/fantasy-shop/.github/blob/main/profile/project_info/adddel.gif?raw=true)
+### 🪄 AI 도우미
+![AI](https://github.com/fantasy-shop/.github/blob/main/profile/project_info/ai.gif?raw=true)
 ### 📲 반응형(PWA)
 ![반응형](https://github.com/fantasy-shop/.github/blob/main/profile/project_info/mobile.gif?raw=true)
 
-## 🧩 성능 테스트
+## 💡 성능 테스트
 ![성능](https://github.com/fantasy-shop/.github/blob/main/profile/project_info/lighthouse.png?raw=true)
 
 ## 🔗 바로 가기
