@@ -109,6 +109,12 @@ public class PaymentServiceImpl implements PaymentService {
         return toPaymentResponseDto(payment);
     }
 
+    @Override
+    public void deletePaymentsByUserId(Long userId) {
+        List<Payment> payments = paymentRepository.findByUserId(userId);
+        paymentRepository.deleteAll(payments);
+    }
+
     private PaymentResponseDto toPaymentResponseDto(Payment payment) {
         PaymentResponseDto dto = new PaymentResponseDto();
         dto.setPaymentPk(payment.getId());

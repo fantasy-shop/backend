@@ -11,4 +11,6 @@ public interface PaymentService {
     PaymentResponseDto createPayment(User user, List<CreatePaymentRequestDto.PaymentItemRequestDto> items);
     List<PaymentSimpleDto> getPaymentHistory(User user);
     PaymentResponseDto getPaymentDetail(User user, Long paymentPk);
+
+    void deletePaymentsByUserId(Long userId);
 }
