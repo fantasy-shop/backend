@@ -8,7 +8,10 @@ import net.supercoding.backend.domain.user.dto.profile.UserProfileResponseDto;
 import net.supercoding.backend.domain.user.dto.profile.UserProfileUpdateRequestDto;
 import net.supercoding.backend.domain.user.dto.signup.SignupRequestDto;
 import net.supercoding.backend.domain.user.entity.User;
+import net.supercoding.backend.domain.user.repository.CartItemRepository;
+import net.supercoding.backend.domain.user.repository.PaymentItemRepository;
 import net.supercoding.backend.domain.user.repository.UserRepository;
+import net.supercoding.backend.domain.user.service.payment.PaymentServiceImpl;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +27,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final CartItemRepository cartItemRepository;
+    private final PaymentItemRepository paymentItemRepository;
+    private final PaymentServiceImpl paymentService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 //    private final ImageUploader imageUploader;
@@ -144,7 +150,16 @@ public class UserService {
 
     @Transactional
     public void deleteUserById(Long userId) {
-        // 사용자 존재 여부 확인 및 예외 처리 가능
+        // 1. 장바구니 아이템 삭제
+        cartItemRepository.deleteByUserId(userId);
+
+        // 2. 결제 항목 삭제
+        paymentItemRepository.deleteByUserId(userId);
+
+        // 3. 결제 정보 삭제 (paymentService 내부에서 처리되면 좋음)
+        paymentService.deletePaymentsByUserId(userId);
+
+        // 4. 유저 삭제
         userRepository.deleteById(userId);
     }
 

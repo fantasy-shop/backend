@@ -129,4 +129,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         return dto;
     }
+
+    public void deletePaymentsByUserId(Long userId) {
+        List<Payment> payments = paymentRepository.findByUserId(userId);
+        paymentRepository.deleteAll(payments);
+    }
 }
